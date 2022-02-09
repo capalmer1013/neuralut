@@ -18,9 +18,11 @@ df = pd.DataFrame({
     "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
 })
 
-#fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 f = random.choice(main.findFiles(main.testDir, main.SUPPORTED_FILES))
-fig = mpl_to_plotly(main.displayCube(main.makeCube(f)))
+cube = main.displayCube(main.makeCube(f))
+fig = px.scatter_3d(cube, x="R", y="G", z="B", color="C")
+
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
 

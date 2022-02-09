@@ -13,6 +13,7 @@ from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import cv2
 from exif import Image
+import pandas as pd
 
 
 SUPPORTED_FILES = ["jpg", "jpeg"]
@@ -145,7 +146,7 @@ def displayCube(cube):
                 b += 1
             g += 1
         r += 1
-    
+    print("returning display cube ")
     return mpl_3d_graph(x, y, z, c)
 
 def mpl_3d_graph(x, y, z, c):
@@ -159,15 +160,13 @@ def mpl_3d_graph(x, y, z, c):
     return fig
 
 def plotly_3d_graph(x, y, z, c):
-    pass
+    return pd.DataFrame(dict(R=x, G=y, B=z, C=c))
+    
 
 testDir = '/mnt/c/Users/Chris Palmer/Desktop/street photos/**'
 if __name__ == "__main__":
-
     # testDir = '/mnt/e/**'
-
     #print(findFiles(testDir, SUPPORTED_FILES))
-
     a = DB()
     a.createExifTable()
 
@@ -182,7 +181,7 @@ if __name__ == "__main__":
             lastMeasure = currentMeasure
             print(currentMeasure, "%")
         #displayImageAsCube(f)
-        displayCube(makeCube(f))
+        displayCube(makeCube(f)).show()
         break
         #a.addEntry(checkForExif(f), f)
 
