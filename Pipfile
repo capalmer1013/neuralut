@@ -16,8 +16,9 @@ formation-studio = "*"
 dash = "*"
 kivy = {extras = ["base"], version = "*"}
 kivy-examples = "*"
+cython = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.10.2"
