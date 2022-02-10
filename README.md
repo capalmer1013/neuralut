@@ -2,5 +2,7 @@
 neuralut
 
 notes:
+2/10/2021
 - there might be a problem with openlut, look into alternatives
-- build command `pyinstaller -F -w kivytest.py -n neuralut.exe
+- build command `pyinstaller -F -w kivytest.py --icon neuralut.ico -n neuralut.exe`
+- trying to get command `pyinstaller kivytest.spec` to create an exe that actually shows the ui... turns out it worked. I was just doing it wrong it's far too late to be working on this
