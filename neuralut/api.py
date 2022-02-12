@@ -55,13 +55,18 @@ class DB:
 
         self.conn.commit()
 
+    def getUniqueFiles(self):
+        self.cur.execute("select distinct filename from exif order by filename;")
+        return self.cur.fetchall()
+
     def addEntry(self, entry, filename):
+        # todo change to upsert logic
         if not entry:
             return
 
         entry['filename'] = filename
 
-        self.cur.execute("select * from exif;")
+        self.cur.execute("select * from exif limit 1;")
         columnNames = [x[0] for x in self.cur.description]
         for each in entry:
             if each not in columnNames:

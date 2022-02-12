@@ -21,7 +21,7 @@ def browseFiles():
     dir = filedialog.askdirectory()
 
     # Change label contents
-    label_file_explorer.configure(text="File Opened: " + dir)
+    label_file_explorer.configure(text="Folder Opened: " + dir)
     doThatExifStuff(dir)
 
 
@@ -40,7 +40,10 @@ def doThatExifStuff(dirname):
 
         window.update()
 
-    exifdb.close()
+    for each in exifdb.getUniqueFiles():
+        l.insert(1, each[0])
+    l.pack(side=LEFT, fill=BOTH, expand=True)
+    window.update()
 
 # Create the root window
 window = Tk()
@@ -64,16 +67,23 @@ button_exit = Button(window,
                      text="Exit",
                      command=exit)
 p = Progressbar(window, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
+l = Listbox(window)
+# https://www.pythontutorial.net/tkinter/tkinter-listbox/
 # Grid method is chosen for placing
 # the widgets at respective positions
 # in a table like structure by
 # specifying rows and columns
-label_file_explorer.grid(column=1, row=1)
+# label_file_explorer.grid(column=1, row=1)
+# button_explore.grid(column=1, row=2)
+# button_exit.grid(column=1, row=3)
+# p.grid(column=1, row=4)
+# l.grid(column=1, row=5)
 
-button_explore.grid(column=1, row=2)
-
-button_exit.grid(column=1, row=3)
-p.grid(column=1, row=4)
+label_file_explorer.pack()
+button_explore.pack()
+button_exit.pack()
+p.pack()
+l.pack()
 
 # Let the window wait for any events
 window.mainloop()
