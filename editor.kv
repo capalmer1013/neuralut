@@ -1,71 +1,43 @@
-#:kivy 1.1.0
+#, kv file implementation
 
-Root:
-    text_input: text_input
+<Filechooser>:
+
+    label: label
+
+    # Providing the orientation
+    orientation: 'vertical'
+
+    # Creating the File list / icon view
 
     BoxLayout:
-        orientation: 'vertical'
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: 'Load'
-                on_release: root.show_load()
-            Button:
-                text: 'Save'
-                on_release: root.show_save()
 
-        BoxLayout:
-            TextInput:
-                id: text_input
-                text: ''
-
-            RstDocument:
-                text: text_input.text
-                show_errors: True
-
-<LoadDialog>:
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-        orientation: "vertical"
+        # Creating list view one side
         FileChooserListView:
-            id: filechooser
+            canvas.before:
+                Color:
+                    rgb: .4, .5, .5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            on_selection: root.select(*args)
 
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
+        # Creating Icon view other side
+        FileChooserIconView:
+            canvas.before:
+                Color:
+                    rgb: .5, .4, .5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            on_selection: root.select(*args)
 
-            Button:
-                text: "Load"
-                on_release: root.load(filechooser.path, filechooser.selection)
-
-<SaveDialog>:
-    text_input: text_input
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-        orientation: "vertical"
-        FileChooserListView:
-            id: filechooser
-            on_selection: text_input.text = self.selection and self.selection[0] or ''
-
-        TextInput:
-            id: text_input
-            size_hint_y: None
-            height: 30
-            multiline: False
-
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
-
-            Button:
-                text: "Save"
-                on_release: root.save(filechooser.path, text_input.text)
+    # Adding label
+    Label:
+        id: label
+        size_hint_y: .1
+        canvas.before:
+            Color:
+                rgb: .5, .5, .4
+            Rectangle:
+                pos: self.pos
+                size: self.size

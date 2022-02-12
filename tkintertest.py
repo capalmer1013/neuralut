@@ -1,47 +1,78 @@
-import tkinter
+# Python program to create
+# a file explorer in Tkinter
+from sys import exit
+import os.path
+# import all components
+# from the tkinter library
+from tkinter import *
+from tkinter.ttk import Progressbar
 
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-
-import numpy as np
-
-
-root = tkinter.Tk()
-root.wm_title("Embedding in Tk")
-
-fig = Figure(figsize=(5, 4), dpi=100)
-t = np.arange(0, 3, .01)
-fig.add_subplot(111).plot(t, 2 * np.sin(2 * np.pi * t))
-
-canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-canvas.draw()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-
-toolbar = NavigationToolbar2Tk(canvas, root)
-toolbar.update()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+# import filedialog module
+from tkinter import filedialog
 
 
-def on_key_press(event):
-    print("you pressed {}".format(event.key))
-    key_press_handler(event, canvas, toolbar)
+
+from neuralut import api
 
 
-canvas.mpl_connect("key_press_event", on_key_press)
+# Function for opening the
+# file explorer window
+def browseFiles():
+    dir = filedialog.askdirectory()
+
+    # Change label contents
+    label_file_explorer.configure(text="File Opened: " + dir)
+    doThatExifStuff(dir)
 
 
-def _quit():
-    root.quit()     # stops mainloop
-    root.destroy()  # this is necessary on Windows to prevent
-                    # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+def doThatExifStuff(dirname):
+    exifdb = api.DB()
+    exifdb.createExifTable()
 
+    validFiles = api.findFiles(dirname+os.path.sep+"**", api.SUPPORTED_FILES)
+    print(validFiles)
+    p.length = len(validFiles)
 
-button = tkinter.Button(master=root, text="Quit", command=_quit)
-button.pack(side=tkinter.BOTTOM)
+    for each in validFiles:
+        print(each)
+        exifdb.addEntry(api.checkForExif(each), each)
+        p.step()
+        window.update()
 
-tkinter.mainloop()
-# If you put root.destroy() here, it will cause an error if the window is
-# closed with the window manager.
+    exifdb.close()
+
+# Create the root window
+window = Tk()
+# Set window title
+window.title('File Explorer')
+# Set window size
+window.geometry("500x500")
+# Set window background color
+window.config(background="white")
+# Create a File Explorer label
+label_file_explorer = Label(window,
+                            text="File Explorer using Tkinter",
+                            width=100, height=4,
+                            fg="blue")
+
+button_explore = Button(window,
+                        text="Browse Files",
+                        command=browseFiles)
+
+button_exit = Button(window,
+                     text="Exit",
+                     command=exit)
+p = Progressbar(window, orient=HORIZONTAL, length=1000, mode="determinate", takefocus=True, maximum=100)
+# Grid method is chosen for placing
+# the widgets at respective positions
+# in a table like structure by
+# specifying rows and columns
+label_file_explorer.grid(column=1, row=1)
+
+button_explore.grid(column=1, row=2)
+
+button_exit.grid(column=1, row=3)
+p.grid(column=1, row=4)
+
+# Let the window wait for any events
+window.mainloop()

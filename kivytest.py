@@ -1,75 +1,39 @@
+# Program to explain how to use File chooser in kivy
+
+# import kivy module
 import kivy
-kivy.require('1.0.7')
 
+# base Class of your App inherits from the App class.
+# app:always refers to the instance of your application
 from kivy.app import App
-from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
 
-import os
-os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
+# this restrict the kivy version i.e
+# below this kivy version you cannot
+# use the app or software
+kivy.require('1.9.0')
 
-
-class TestApp(App):
-    def build(self):
-        # return a Button() as a root widget
-        return Button(text='hello world')
-
-class LoadDialog(FloatLayout):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
+# BoxLayout arranges widgets in either in
+# a vertical fashion that is one on top of
+# another or in a horizontal fashion
+# that is one after another.
+from kivy.uix.boxlayout import BoxLayout
 
 
-class SaveDialog(FloatLayout):
-    save = ObjectProperty(None)
-    text_input = ObjectProperty(None)
-    cancel = ObjectProperty(None)
+# create the layout class
+class Filechooser(BoxLayout):
+    def select(self, *args):
+        try:
+            self.label.text = args[1][0]
+        except:
+            pass
 
 
-class Root(FloatLayout):
-    loadfile = ObjectProperty(None)
-    savefile = ObjectProperty(None)
-    text_input = ObjectProperty(None)
-
-    def dismiss_popup(self):
-        self._popup.dismiss()
-
-    def show_load(self):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Load file", content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
-
-    def show_save(self):
-        content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Save file", content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
-
-    def load(self, path, filename):
-        with open(os.path.join(path, filename[0])) as stream:
-            self.text_input.text = stream.read()
-
-        self.dismiss_popup()
-
-    def save(self, path, filename):
-        with open(os.path.join(path, filename), 'w') as stream:
-            stream.write(self.text_input.text)
-
-        self.dismiss_popup()
-
-
+# Create the App class
 class Editor(App):
-    pass
+    def build(self):
+        return Filechooser()
 
 
-Factory.register('Root', cls=Root)
-Factory.register('LoadDialog', cls=LoadDialog)
-Factory.register('SaveDialog', cls=SaveDialog)
-
-
+# run the App
 if __name__ == '__main__':
     Editor().run()
-    # TestApp().run()

@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['kivytest.py'],
+a = Analysis(['tkintertest.py'],
              pathex=[],
              binaries=[],
              datas=[],
