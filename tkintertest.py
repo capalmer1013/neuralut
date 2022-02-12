@@ -31,12 +31,13 @@ def doThatExifStuff(dirname):
 
     validFiles = api.findFiles(dirname+os.path.sep+"**", api.SUPPORTED_FILES)
     print(validFiles)
-    p.length = len(validFiles)
-
+    count = 0
     for each in validFiles:
+        count += 1
+        p['value'] = count/len(validFiles)*100
         print(each)
         exifdb.addEntry(api.checkForExif(each), each)
-        p.step()
+
         window.update()
 
     exifdb.close()
@@ -62,7 +63,7 @@ button_explore = Button(window,
 button_exit = Button(window,
                      text="Exit",
                      command=exit)
-p = Progressbar(window, orient=HORIZONTAL, length=1000, mode="determinate", takefocus=True, maximum=100)
+p = Progressbar(window, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
 # Grid method is chosen for placing
 # the widgets at respective positions
 # in a table like structure by
