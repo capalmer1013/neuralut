@@ -11,11 +11,7 @@ from PIL import Image, ImageTk
 # import filedialog module
 from tkinter import filedialog
 
-
-
 from neuralut import api
-
-
 
 
 def listbox_callback(event):
@@ -30,6 +26,7 @@ def listbox_callback(event):
         img2 = ImageTk.PhotoImage(image1)
         print(img2)
         # canvas.itemconfig(image_container, image=img2)
+
 
 class LeftPanel(Frame):
     def __init__(self, parent, ext_canvas, **kwargs):
@@ -60,11 +57,12 @@ class LeftPanel(Frame):
         # Change label contents
         self.label_file_explorer.configure(text="Folder Opened: " + dir)
         self.doThatExifStuff(dir)
+
     def loadOtherImage(self):
         print("loading other image")
         otherImage = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350483_edited.jpg')
         otherImage.thumbnail((1080, 1080), Image.ANTIALIAS)
-        self.canvas.config(image=ImageTk.PhotoImage(otherImage))
+        # self.canvas.config(image=ImageTk.PhotoImage(otherImage))
         # window.update()
 
     def doThatExifStuff(self, dirname):
@@ -84,7 +82,6 @@ class LeftPanel(Frame):
 
         for each in exifdb.getUniqueFiles():
             self.l.insert(1, each[0])
-        self.l.pack(side=LEFT, fill=BOTH, expand=True)
         self.l.pack(side=LEFT, fill=BOTH, expand=True)
         window.update()
 
@@ -114,22 +111,26 @@ img = ImageTk.PhotoImage(image)
 
 # image_container = canvas.create_image(0, 0, anchor=NW, image=img)
 frame = LeftPanel(window, canvas, relief=RAISED, borderwidth=1)
-frame.pack(side=LEFT)
-canvas.pack(side=RIGHT)
-image_id = canvas.create_image(0, 0, anchor=NW, image=img)
+
+
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
+
 
 otherImage = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350193_edited.jpg')
 otherImage.thumbnail((1080, 1080), Image.ANTIALIAS)
-#canvas.config(image=ImageTk.PhotoImage(otherImage))
+otherImg = ImageTk.PhotoImage(otherImage)
+#canvas.itemconfig(image_id, image=ImageTk.PhotoImage(otherImage))
+#canvas.create_image(0, 0, anchor=NW, image=otherImage)
+
+frame.pack(side=LEFT)
+canvas.pack(side=RIGHT)
 
 # frame.grid(column=1, row=1, sticky=NS)
 # canvas.grid(column=2, row=1)
 
-
-
-#canvas.itemconfig(image_id, image=ImageTk.PhotoImage(otherImage))
-#window.update()
+image_id = canvas.create_image(0, 0, anchor=NW, image=img)
+img = otherImg
+canvas.itemconfig(image_id, image=img)
 
 # Let the window wait for any events
 window.mainloop()
