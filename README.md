@@ -6,6 +6,7 @@ notes:
 - new build command is `pyinstaller neuralut.exe.spec`
 - tkintertest is getting the the point where it will need cleaned up. possibly after v 0.1.0
 
+
 2/12/2021
 - kivy sucks for everything. back to tkinter, looks 90s AF but we good
 - new command is `pyinstaller -F -w tkintertest.py --icon neuralut.ico -n neuralut.exe`
