@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import cv2
 from exif import Image
 import pandas as pd
+import hashlib
 
 SUPPORTED_FILES = ["jpg", "jpeg"]
 
@@ -51,7 +52,9 @@ class DB:
             create table if not exists exif(
                 id integer PRIMARY KEY,
                 filename TEXT,
-                hash TEXT);""")
+                hash TEXT unique
+            );
+            """)
 
         self.conn.commit()
 
@@ -62,8 +65,8 @@ class DB:
     def addEntry(self, entry, filename):
         # todo change to upsert logic
         if not entry:
-            return
-
+            return 
+        entry['hash'] = hashlib.sha256(bytes(str(entry)+filename, 'utf-8')).hexdigest()
         entry['filename'] = filename
 
         self.cur.execute("select * from exif limit 1;")
@@ -71,6 +74,7 @@ class DB:
         for each in entry:
             if each not in columnNames:
                 self.cur.execute("ALTER TABLE exif ADD COLUMN {} TEXT".format(each))
+
 
         fieldnames = [x for x in entry]
         values = [str(entry[x]) for x in fieldnames]
@@ -83,8 +87,13 @@ class DB:
             insertString += '"' + each + '", '
 
         insertString = insertString[:-2] + ");"
+        try:
+            self.cur.execute(insertString)
+        except sqlite3.IntegrityError as e:
+            # todo: add some way to figure out if this is the unique constraint failure
+            # text: UNIQUE constraint failed: exif.hash
+            pass
 
-        self.cur.execute(insertString)
         self.conn.commit()
 
 
