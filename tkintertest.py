@@ -1,17 +1,13 @@
-# Python program to create
-# a file explorer in Tkinter
 from sys import exit
 import os.path
-# import all components
-# from the tkinter library
 from tkinter import *
 from tkinter.ttk import Progressbar
 from PIL import Image, ImageTk
-
-# import filedialog module
 from tkinter import filedialog
 
 from neuralut import api
+
+IMG_SIZE = (800, 800)
 
 
 def listbox_callback(event):
@@ -23,9 +19,10 @@ def listbox_callback(event):
         print("filename:", data)
         image1 = Image.open(data)
         print(image1)
-        image1.thumbnail((1080, 1080), Image.ANTIALIAS)
+        image1.thumbnail(IMG_SIZE, Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image1)
         canvas.itemconfig(image_id, image=img)
+
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -42,17 +39,10 @@ def leftPanel(parent, lboxSelectCallback):
     # file explorer window
     def browseFiles():
         dir = filedialog.askdirectory()
-
-        # Change label contents
-        label_file_explorer.configure(text="Folder Opened: " + dir)
-        doThatExifStuff(dir)
-
-    def loadOtherImage():
-        print("loading other image")
-        otherImage = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350483_edited.jpg')
-        otherImage.thumbnail((1080, 1080), Image.ANTIALIAS)
-        # self.canvas.config(image=ImageTk.PhotoImage(otherImage))
-        # window.update()
+        if dir:
+            # Change label contents
+            label_file_explorer.configure(text="Folder Opened: " + dir)
+            doThatExifStuff(dir)
 
     def doThatExifStuff(dirname):
         exifdb = api.DB()
@@ -77,14 +67,12 @@ def leftPanel(parent, lboxSelectCallback):
     label_file_explorer = Label(parent, text="NEURALUT", width=100, height=4, fg="blue")
     button_explore = Button(parent, text="Browse Files", command=browseFiles)
     button_exit = Button(parent, text="Exit", command=exit)
-    anotherButton = Button(parent, text="load the other one", command=loadOtherImage)
     p = Progressbar(parent, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
     l = Listbox(parent)
 
     label_file_explorer.pack(side=TOP)
     button_explore.pack(side=TOP)
     button_exit.pack(side=TOP)
-    anotherButton.pack(side=TOP)
     p.pack(side=TOP)
     l.pack(fill=BOTH, expand=True)
 
@@ -92,54 +80,34 @@ def leftPanel(parent, lboxSelectCallback):
     return parent
 
 
+def rightPanel(parent):
+    canvas = Canvas(parent, width=IMG_SIZE[0], height=IMG_SIZE[1])
+    image = Image.open(resource_path('default.png'))
+    image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(image)
+    image_id = canvas.create_image(0, 0, anchor=NW, image=img)
+    canvas.pack(expand=True, fill=X)
+    var = StringVar()
+    exifLabel = Label(parent, textvariable=var, relief=RAISED)
+    var.set("test text")
+    exifLabel.pack(side=LEFT)
+    return parent, canvas, image_id, img, var
 
 
-# Create the root window
 root = Tk()
-# Set window title
 root.title('File Explorer')
-# Set window size
-#window.geometry("1000x500")
-# Set window background color
 root.config(background="white")
 
 window = Frame(root)
 window.pack()
 
-# frame = Frame(window, relief=RAISED, borderwidth=1, height=1000)
-canvas = Canvas(window, width=1000, height=1000)
-
-#image = Image.open("default.png")
-image = Image.open(resource_path('default.png'))
-#image = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350193_edited.jpg')
-image.thumbnail((1080, 1080), Image.ANTIALIAS)
-img = ImageTk.PhotoImage(image)
-#canvas = Label(window, width=1000, height=1000, image=img)
-# python_image = PhotoImage(file='default.png')
-
-
-# image_container = canvas.create_image(0, 0, anchor=NW, image=img)
 leftFrame = leftPanel(Frame(window, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
-
+rightFrame, canvas, image_id, img, exifText = rightPanel(Frame(window, borderwidth=1, height=1000))
 
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
 
 
-otherImage = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350193_edited.jpg')
-otherImage.thumbnail((1080, 1080), Image.ANTIALIAS)
-otherImg = ImageTk.PhotoImage(otherImage)
-#canvas.itemconfig(image_id, image=ImageTk.PhotoImage(otherImage))
-#canvas.create_image(0, 0, anchor=NW, image=otherImage)
-
-#leftFrame.pack(side=LEFT)
-#canvas.pack(side=RIGHT)
-
 leftFrame.grid(column=1, row=1, sticky=NS)
-canvas.grid(column=2, row=1)
+rightFrame.grid(column=2, row=1)
 
-image_id = canvas.create_image(0, 0, anchor=NW, image=img)
-# img = otherImg
-# canvas.itemconfig(image_id, image=img)
-
-# Let the window wait for any events
 window.mainloop()
