@@ -15,6 +15,7 @@ from neuralut import api
 
 
 def listbox_callback(event):
+    global img
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
@@ -23,49 +24,28 @@ def listbox_callback(event):
         image1 = Image.open(data)
         print(image1)
         image1.thumbnail((1080, 1080), Image.ANTIALIAS)
-        img2 = ImageTk.PhotoImage(image1)
-        print(img2)
-        # canvas.itemconfig(image_container, image=img2)
+        img = ImageTk.PhotoImage(image1)
+        canvas.itemconfig(image_id, image=img)
 
 
-class LeftPanel(Frame):
-    def __init__(self, parent, ext_canvas, **kwargs):
-        super().__init__(parent, **kwargs)
-        self.canvas = ext_canvas
-        # Create a File Explorer label
-        self.label_file_explorer = Label(self, text="NEURALUT", width=100, height=4, fg="blue")
-        self.button_explore = Button(self, text="Browse Files", command=self.browseFiles)
-        self.button_exit = Button(self, text="Exit", command=exit)
-        self.anotherButton = Button(self, text="load the other one", command=self.loadOtherImage)
-        self.p = Progressbar(self, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
-        self.l = Listbox(self)
-
-        self.label_file_explorer.pack(side=TOP)
-        self.button_explore.pack(side=TOP)
-        self.button_exit.pack(side=TOP)
-        self.anotherButton.pack(side=TOP)
-        self.p.pack(side=TOP)
-        self.l.pack(fill=BOTH, expand=True)
-
-        self.l.bind("<<ListboxSelect>>", listbox_callback)
-
+def leftPanel(parent, lboxSelectCallback):
     # Function for opening the
     # file explorer window
-    def browseFiles(self):
+    def browseFiles():
         dir = filedialog.askdirectory()
 
         # Change label contents
-        self.label_file_explorer.configure(text="Folder Opened: " + dir)
-        self.doThatExifStuff(dir)
+        label_file_explorer.configure(text="Folder Opened: " + dir)
+        doThatExifStuff(dir)
 
-    def loadOtherImage(self):
+    def loadOtherImage():
         print("loading other image")
         otherImage = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350483_edited.jpg')
         otherImage.thumbnail((1080, 1080), Image.ANTIALIAS)
         # self.canvas.config(image=ImageTk.PhotoImage(otherImage))
         # window.update()
 
-    def doThatExifStuff(self, dirname):
+    def doThatExifStuff(dirname):
         exifdb = api.DB()
         exifdb.createExifTable()
 
@@ -74,16 +54,36 @@ class LeftPanel(Frame):
         count = 0
         for each in validFiles:
             count += 1
-            self.p['value'] = count / len(validFiles) * 100
+            p['value'] = count / len(validFiles) * 100
             print(each)
             exifdb.addEntry(api.checkForExif(each), each)
 
             window.update()
 
         for each in exifdb.getUniqueFiles():
-            self.l.insert(1, each[0])
-        self.l.pack(side=LEFT, fill=BOTH, expand=True)
+            l.insert(1, each[0])
+        l.pack(side=LEFT, fill=BOTH, expand=True)
         window.update()
+    # Create a File Explorer label
+    label_file_explorer = Label(parent, text="NEURALUT", width=100, height=4, fg="blue")
+    button_explore = Button(parent, text="Browse Files", command=browseFiles)
+    button_exit = Button(parent, text="Exit", command=exit)
+    anotherButton = Button(parent, text="load the other one", command=loadOtherImage)
+    p = Progressbar(parent, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
+    l = Listbox(parent)
+
+    label_file_explorer.pack(side=TOP)
+    button_explore.pack(side=TOP)
+    button_exit.pack(side=TOP)
+    anotherButton.pack(side=TOP)
+    p.pack(side=TOP)
+    l.pack(fill=BOTH, expand=True)
+
+    l.bind("<<ListboxSelect>>", lboxSelectCallback)
+    return parent
+
+
+
 
 # Create the root window
 root = Tk()
@@ -101,7 +101,7 @@ window.pack()
 canvas = Canvas(window, width=1000, height=1000)
 
 #image = Image.open("default.png")
-image = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350235_edited.jpg')
+image = Image.open('default.png')
 #image = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350193_edited.jpg')
 image.thumbnail((1080, 1080), Image.ANTIALIAS)
 img = ImageTk.PhotoImage(image)
@@ -110,7 +110,7 @@ img = ImageTk.PhotoImage(image)
 
 
 # image_container = canvas.create_image(0, 0, anchor=NW, image=img)
-frame = LeftPanel(window, canvas, relief=RAISED, borderwidth=1)
+leftFrame = leftPanel(Frame(window, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
 
 
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
@@ -122,15 +122,15 @@ otherImg = ImageTk.PhotoImage(otherImage)
 #canvas.itemconfig(image_id, image=ImageTk.PhotoImage(otherImage))
 #canvas.create_image(0, 0, anchor=NW, image=otherImage)
 
-frame.pack(side=LEFT)
-canvas.pack(side=RIGHT)
+#leftFrame.pack(side=LEFT)
+#canvas.pack(side=RIGHT)
 
-# frame.grid(column=1, row=1, sticky=NS)
-# canvas.grid(column=2, row=1)
+leftFrame.grid(column=1, row=1, sticky=NS)
+canvas.grid(column=2, row=1)
 
 image_id = canvas.create_image(0, 0, anchor=NW, image=img)
-img = otherImg
-canvas.itemconfig(image_id, image=img)
+# img = otherImg
+# canvas.itemconfig(image_id, image=img)
 
 # Let the window wait for any events
 window.mainloop()
