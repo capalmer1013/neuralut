@@ -34,6 +34,13 @@ def checkForExif(filename):
         return None
 
 
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+
 class DB:
     def __init__(self, filename="exif.db"):
         self.filename = filename
@@ -41,6 +48,7 @@ class DB:
 
     def open(self):
         self.conn = sqlite3.connect(self.filename)
+        self.conn.row_factory = dict_factory
         self.cur = self.conn.cursor()
 
     def close(self):
@@ -61,6 +69,10 @@ class DB:
     def getUniqueFiles(self):
         self.cur.execute("select distinct filename from exif order by filename;")
         return self.cur.fetchall()
+
+    def getExifByFilename(self, filename):
+        self.cur.execute("select * from exif where filename='{}';".format(filename))
+        return self.cur.fetchone()
 
     def addEntry(self, entry, filename):
         # todo change to upsert logic

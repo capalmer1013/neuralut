@@ -4,12 +4,14 @@ from tkinter import *
 from tkinter.ttk import Progressbar
 from PIL import Image, ImageTk
 from tkinter import filedialog
+from fractions import Fraction
 
 from neuralut import api
 
 IMG_SIZE = (800, 800)
-
-
+ISO = "photographic_sensitivity"
+SHUTTER_SPEED = "exposure_time"
+F_STOP = "f_number"
 def listbox_callback(event):
     global img
     selection = event.widget.curselection()
@@ -17,6 +19,15 @@ def listbox_callback(event):
         index = selection[0]
         data = event.widget.get(index)
         print("filename:", data)
+        exifdb = api.DB()
+        exifData = exifdb.getExifByFilename(data)
+        shutter_fraction = exifData[SHUTTER_SPEED]
+        try:
+            shutter_fraction = str(Fraction(exifData[SHUTTER_SPEED]).limit_denominator())
+        except Exception as e:
+            print(e)
+            pass
+        exifText.set("iso: {}, shutter: {}, f-stop: {}".format(exifData[ISO], shutter_fraction, exifData[F_STOP]))
         image1 = Image.open(data)
         print(image1)
         image1.thumbnail(IMG_SIZE, Image.ANTIALIAS)
@@ -49,7 +60,6 @@ def leftPanel(parent, lboxSelectCallback):
         exifdb.createExifTable()
 
         validFiles = api.findFiles(dirname + os.path.sep + "**", api.SUPPORTED_FILES)
-        print(validFiles)
         count = 0
         for each in validFiles:
             count += 1
@@ -60,7 +70,7 @@ def leftPanel(parent, lboxSelectCallback):
             window.update()
 
         for each in exifdb.getUniqueFiles():
-            l.insert(1, each[0])
+            l.insert(1, each['filename'])
         l.pack(side=LEFT, fill=BOTH, expand=True)
         window.update()
     # Create a File Explorer label
@@ -88,7 +98,7 @@ def rightPanel(parent):
     image_id = canvas.create_image(0, 0, anchor=NW, image=img)
     canvas.pack(expand=True, fill=X)
     var = StringVar()
-    exifLabel = Label(parent, textvariable=var, relief=RAISED)
+    exifLabel = Label(parent, textvariable=var, relief=RAISED, font=("Arial", 25))
     var.set("test text")
     exifLabel.pack(side=LEFT)
     return parent, canvas, image_id, img, var
