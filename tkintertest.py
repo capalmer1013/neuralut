@@ -27,6 +27,15 @@ def listbox_callback(event):
         img = ImageTk.PhotoImage(image1)
         canvas.itemconfig(image_id, image=img)
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def leftPanel(parent, lboxSelectCallback):
     # Function for opening the
@@ -101,7 +110,7 @@ window.pack()
 canvas = Canvas(window, width=1000, height=1000)
 
 #image = Image.open("default.png")
-image = Image.open('default.png')
+image = Image.open(resource_path('default.png'))
 #image = Image.open('C:/Users/Chris Palmer/Desktop/street photos\P1350193_edited.jpg')
 image.thumbnail((1080, 1080), Image.ANTIALIAS)
 img = ImageTk.PhotoImage(image)
