@@ -102,9 +102,19 @@ class DB:
         try:
             self.cur.execute(insertString)
         except sqlite3.IntegrityError as e:
+            print(e)
             # todo: add some way to figure out if this is the unique constraint failure
             # text: UNIQUE constraint failed: exif.hash
             pass
+        except ValueError as e:
+            # observed as:
+            # ValueError: the query contains a null character
+            # todo: add a more explicit check for null character, or remove them
+            print(e)
+            pass
+        except Exception as e:
+            print(e)
+            raise e;
 
         self.conn.commit()
 
