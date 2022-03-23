@@ -6,6 +6,7 @@ from tkinter.ttk import Progressbar
 from PIL import Image, ImageTk
 from tkinter import filedialog
 from fractions import Fraction
+from ttkthemes import ThemedTk
 
 from neuralut import api
 
@@ -180,7 +181,9 @@ def key_press(e):
 
 
 
-root = Tk()
+# root = Tk()
+# todo: darkmode
+root = ThemedTk('arc')
 root.bind('<KeyPress>', key_press)
 root.title('File Explorer')
 root.config(background="white")
