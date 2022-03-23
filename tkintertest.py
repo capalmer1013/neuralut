@@ -38,19 +38,20 @@ def listbox_callback(event):
         img = ImageTk.PhotoImage(image1)
         canvas.itemconfig(image_id, image=img)
 
+
 def refreshCompareImages(choiceRight):
     global left
     global right
 
-    exifdb = api.DB()
+    comparisons = comparisonTree.getNextComparison()
     if choiceRight:
-        pass
+        comparisons.chooseWinner(1)
     else:
-        pass
+        comparisons.chooseWinner(0)
+    comparisons = comparisonTree.getNextComparison()
     try:
         # todo: this should be functionalized
-        images = random.sample(exifdb.getUniqueFiles(), 2)
-        print(images)
+        images = [comparisons.leftChild.data, comparisons.rightChild.data]
         # refresh left
         l = Image.open(images[0]['filename'])
         l.thumbnail(IMG_SIZE, Image.ANTIALIAS)
@@ -194,6 +195,11 @@ mainWindow.pack()
 menu = menuBar(mainWindow)
 leftFrame = leftPanel(Frame(mainWindow, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
 rightFrame, canvas, image_id, img, exifText = rightPanel(Frame(mainWindow, borderwidth=1, height=1000))
+
+exifdb = api.DB()
+loadedFiles = exifdb.getUniqueFiles()
+random.shuffle(loadedFiles)
+comparisonTree = api.ComparisonNode(l=loadedFiles)
 
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
 

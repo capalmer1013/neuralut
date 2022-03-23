@@ -41,6 +41,74 @@ def dict_factory(cursor, row):
     return d
 
 
+class ComparisonNode:
+    def __init__(self, data=None, parent=None, l=None):
+        self.leftChild = None
+        self.rightChild = None
+        self.parent = parent
+        self.data = data
+        if l:
+            if len(l) == 1:
+                self.data = l[0]
+            else:
+                self.createTreeFromList(l)
+
+    def createTreeFromList(self, l):
+        if len(l) > 1:
+            self.leftChild = ComparisonNode(parent=self, l=l[len(l)//2:])
+            self.rightChild = ComparisonNode(parent=self, l=l[:len(l)//2])
+        else:
+            if l:
+                self.data = l[0]
+
+    def getNextComparison(self):
+        try:
+            if self.leftChild and not self.leftChild.data:
+                return self.leftChild.getNextComparison()
+        except Exception as e:
+            print(e)
+        try:
+            if self.rightChild and not self.rightChild.data:
+                return self.rightChild.getNextComparison()
+        except Exception as e:
+            print(e)
+
+        return self
+
+    def chooseWinner(self, leftOrRight):
+        # left = 0, right = 1
+        if leftOrRight == 0:
+            self.data = self.leftChild.data
+        elif leftOrRight == 1:
+            self.data = self.rightChild.data
+        else:
+            print("wtf is you doing?")
+
+    def getCurrentSorting(self):
+        sortedList = []
+        queue = [self]
+        while len(queue) > 0:
+            if queue[0].data not in sortedList:
+                sortedList.append(queue[0].data)
+            node = queue.pop(0)
+            if node.leftChild is not None:
+                queue.append(node.leftChild)
+
+            if node.rightChild is not None:
+                queue.append(node.rightChild)
+
+        return sortedList
+
+    def __repr__(self):
+        data = ""
+        if self.leftChild:
+            data += "left: " + str(self.leftChild.data)
+        if self.rightChild:
+            data += "right: " + str(self.rightChild.data)
+
+        return str(self.data) + data
+
+
 class DB:
     def __init__(self, filename="exif.db"):
         self.filename = filename
