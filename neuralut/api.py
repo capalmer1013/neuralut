@@ -128,7 +128,8 @@ class DB:
             create table if not exists exif(
                 id integer PRIMARY KEY,
                 filename TEXT,
-                hash TEXT unique
+                hash TEXT unique,
+                ranking integer default -1 not null
             );
             """)
 
