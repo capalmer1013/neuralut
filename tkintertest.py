@@ -1,5 +1,6 @@
 from sys import exit
 import os.path
+import random
 from tkinter import *
 from tkinter.ttk import Progressbar
 from PIL import Image, ImageTk
@@ -12,6 +13,8 @@ IMG_SIZE = (800, 800)
 ISO = "photographic_sensitivity"
 SHUTTER_SPEED = "exposure_time"
 F_STOP = "f_number"
+
+
 def listbox_callback(event):
     global img
     selection = event.widget.curselection()
@@ -33,6 +36,34 @@ def listbox_callback(event):
         image1.thumbnail(IMG_SIZE, Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image1)
         canvas.itemconfig(image_id, image=img)
+
+def refreshCompareImages(choiceRight):
+    global left
+    global right
+
+    exifdb = api.DB()
+    if choiceRight:
+        pass
+    else:
+        pass
+    try:
+        # todo: this should be functionalized
+        images = random.sample(exifdb.getUniqueFiles(), 2)
+        print(images)
+        # refresh left
+        l = Image.open(images[0]['filename'])
+        l.thumbnail(IMG_SIZE, Image.ANTIALIAS)
+        left['img'] = ImageTk.PhotoImage(l)
+        left['canvas'].itemconfig(left['image_id'], image=left['img'])
+        # refresh right
+        r = Image.open(images[1]['filename'])
+        r.thumbnail(IMG_SIZE, Image.ANTIALIAS)
+        right['img'] = ImageTk.PhotoImage(r)
+        right['canvas'].itemconfig(right['image_id'], image=right['img'])
+
+    except Exception as e:
+        print(e)
+
 
 
 def resource_path(relative_path):
@@ -82,7 +113,7 @@ def leftPanel(parent, lboxSelectCallback):
 
     label_file_explorer.pack(side=TOP)
     button_explore.pack(side=TOP)
-    button_exit.pack(side=TOP)
+    #button_exit.pack(side=TOP)
     p.pack(side=TOP)
     l.pack(fill=BOTH, expand=True)
 
@@ -104,20 +135,68 @@ def rightPanel(parent):
     return parent, canvas, image_id, img, var
 
 
+def menuBar(parent):
+    menubar = Menu(parent)
+    filemenu = Menu(menubar, tearoff=0)
+    filemenu.add_command(label="Main Page", command=lambda: raiseWindow(mainWindow))
+    filemenu.add_command(label="Compare", command=lambda: raiseWindow(compareWindow))
+    filemenu.add_separator()
+    filemenu.add_command(label="Exit", command=exit)
+    menubar.add_cascade(label="File", menu=filemenu)
+    return menubar
+
+
+def raiseWindow(w):
+    global window
+    w.pack()
+    window.pack_forget()
+    window = w
+
+
+def createImage(parent):
+    canvas = Canvas(parent, width=IMG_SIZE[0], height=IMG_SIZE[1])
+    image = Image.open(resource_path('default.png'))
+    image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(image)
+    image_id = canvas.create_image(0, 0, anchor=NW, image=img)
+    canvas.pack(expand=True, fill=X)
+    return {"img": img, "canvas": canvas, "image_id": image_id, "parent": parent}
+
+
+def CompareWindow(parent):
+    left = createImage(Frame(parent, borderwidth=1, height=1000))
+    right = createImage(Frame(parent,  borderwidth=1, height=1000))
+    left['parent'].grid(column=1, row=1, sticky=NS)
+    right['parent'].grid(column=2, row=1)
+    return parent, left, right
+
+
+def key_press(e):
+    if window == compareWindow:
+        if e.keycode == 39:  # right
+            refreshCompareImages(True)
+        elif e.keycode == 37:  # left
+            refreshCompareImages(False)
+
+
+
 root = Tk()
+root.bind('<KeyPress>', key_press)
 root.title('File Explorer')
 root.config(background="white")
 
-window = Frame(root)
-window.pack()
-
-leftFrame = leftPanel(Frame(window, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
-rightFrame, canvas, image_id, img, exifText = rightPanel(Frame(window, borderwidth=1, height=1000))
+mainWindow = Frame(root)
+compareWindow, left, right = CompareWindow(Frame(root))
+mainWindow.pack()
+menu = menuBar(mainWindow)
+leftFrame = leftPanel(Frame(mainWindow, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
+rightFrame, canvas, image_id, img, exifText = rightPanel(Frame(mainWindow, borderwidth=1, height=1000))
 
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
 
 
 leftFrame.grid(column=1, row=1, sticky=NS)
 rightFrame.grid(column=2, row=1)
-
+root.config(menu=menu)
+window = mainWindow
 window.mainloop()
