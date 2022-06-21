@@ -1,6 +1,21 @@
 # neuralut
 neuralut
 
+# setup
+dependencies:
+- pyenv 
+	- https://github.com/pyenv/pyenv#installation
+	- `curl https://pyenv.run | bash`
+- pipenv
+	- https://pipenv.pypa.io/en/latest/#install-pipenv-today
+	- `pip install --user pipenv` (I normally drop --user and install globally)
+
+setup:
+- `pipenv install`
+	- if pipenv didn't detect pyenv and prompt to install the correct version of python, might need to run `pyenv install` first
+- `pipenv run python tkintertest.py`
+	- might need to install system tkinter, readline, bz2, sqlite dev libraries (if python not compiled with them, if using pyenv this is usually because the appropriate libraries are not installed)
+
 notes:
 2/18/2021
 - new build command is `pyinstaller neuralut.exe.spec`
