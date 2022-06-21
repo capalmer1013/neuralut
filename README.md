@@ -8,7 +8,7 @@ dependencies:
 	- `curl https://pyenv.run | bash`
 - pipenv
 	- https://pipenv.pypa.io/en/latest/#install-pipenv-today
-	- `pip install --user pipenv` (I normally drop --user and install globally)
+	- `pip install --user pipenv` ~~(I normally drop --user and install globally)~~ (don't do that)
 
 setup:
 - `pipenv install`
