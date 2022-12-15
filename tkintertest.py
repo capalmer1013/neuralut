@@ -196,11 +196,13 @@ menu = menuBar(mainWindow)
 leftFrame = leftPanel(Frame(mainWindow, relief=RAISED, borderwidth=1, height=1000), listbox_callback)
 rightFrame, canvas, image_id, img, exifText = rightPanel(Frame(mainWindow, borderwidth=1, height=1000))
 
-exifdb = api.DB()
-loadedFiles = exifdb.getUniqueFiles()
-random.shuffle(loadedFiles)
-comparisonTree = api.ComparisonNode(l=loadedFiles)
-
+try:
+    exifdb = api.DB()
+    loadedFiles = exifdb.getUniqueFiles()
+    random.shuffle(loadedFiles)
+    comparisonTree = api.ComparisonNode(l=loadedFiles)
+except Exception as e:
+    print(e)
 # https://www.pythontutorial.net/tkinter/tkinter-listbox/
 
 
