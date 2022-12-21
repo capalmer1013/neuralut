@@ -1,4 +1,5 @@
 from sys import exit
+import sys
 import os.path
 from tkinter import *
 from tkinter.ttk import Progressbar
@@ -12,6 +13,7 @@ IMG_SIZE = (800, 800)
 ISO = "photographic_sensitivity"
 SHUTTER_SPEED = "exposure_time"
 F_STOP = "f_number"
+# todo: better function name
 def listbox_callback(event):
     global img
     selection = event.widget.curselection()
@@ -34,7 +36,6 @@ def listbox_callback(event):
         img = ImageTk.PhotoImage(image1)
         canvas.itemconfig(image_id, image=img)
 
-
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -55,10 +56,7 @@ def leftPanel(parent, lboxSelectCallback):
             label_file_explorer.configure(text="Folder Opened: " + dir)
             doThatExifStuff(dir)
 
-    def doThatExifStuff(dirname):
-        exifdb = api.DB()
-        exifdb.createExifTable()
-
+    def readFilesFromDir(dirname, exifdb):
         validFiles = api.findFiles(dirname + os.path.sep + "**", api.SUPPORTED_FILES)
         count = 0
         for each in validFiles:
@@ -66,13 +64,17 @@ def leftPanel(parent, lboxSelectCallback):
             p['value'] = count / len(validFiles) * 100
             print(each)
             exifdb.addEntry(api.checkForExif(each), each)
-
             window.update()
 
+    def doThatExifStuff(dirname):
+        exifdb = api.DB()
+        exifdb.createExifTable()
+        readFilesFromDir(dirname, exifdb)
         for each in exifdb.getUniqueFiles():
             l.insert(1, each['filename'])
         l.pack(side=LEFT, fill=BOTH, expand=True)
         window.update()
+
     # Create a File Explorer label
     label_file_explorer = Label(parent, text="NEURALUT", width=100, height=4, fg="blue")
     button_explore = Button(parent, text="Browse Files", command=browseFiles)
@@ -88,7 +90,6 @@ def leftPanel(parent, lboxSelectCallback):
 
     l.bind("<<ListboxSelect>>", lboxSelectCallback)
     return parent
-
 
 def rightPanel(parent):
     canvas = Canvas(parent, width=IMG_SIZE[0], height=IMG_SIZE[1])
