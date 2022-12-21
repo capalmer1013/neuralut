@@ -14,7 +14,6 @@ plotly = "==5.5.0"
 pandas = "*"
 formation-studio = "*"
 dash = "*"
-kivy = {extras = ["base"], version = "*"}
 kivy-examples = "*"
 cython = "*"
 
