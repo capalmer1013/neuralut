@@ -16,6 +16,8 @@ formation-studio = "*"
 dash = "*"
 kivy-examples = "*"
 cython = "*"
+fastapi = {extras = ["all"], version = "*"}
+monkeytype = "*"
 
 [dev-packages]
 
