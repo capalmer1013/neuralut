@@ -10,6 +10,8 @@ import utils as U
 from sys import exit
 import sys
 import os.path
+import random
+import json
 
 
 IMG_SIZE = (800, 800)
@@ -31,7 +33,7 @@ class App(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        ## Initialize Frames
+        ## Initialize Views
         self.frames = {}
         self.HomePage = HomePage
         self.Compare = Compare
@@ -43,6 +45,8 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")    
            
         self.show_frame(HomePage)
+        self.bind("<Left>", lambda event: self.frames[Compare].chooseLR(0))
+        self.bind("<Right>", lambda event: self.frames[Compare].chooseLR(1))
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -50,7 +54,6 @@ class App(tk.Tk):
         self.configure(menu=menubar)
         frame.tkraise()                         ## This line will put the frame on front
  
-
 
 
 class View(tk.Frame):
@@ -93,6 +96,7 @@ class FileList(tk.Frame):
         self.listbox.grid(row=1, sticky=N, rowspan=3)
         self.listbox.bind("<<ListboxSelect>>", self.listbox_callback)
         self.preview = preview
+        # cleanup the db access stuff
         exifdb = api.DB()
         exifdb.createExifTable()
         self.populateFileListFromDB(exifdb)
@@ -174,16 +178,68 @@ class HomePage(View):
         self.fileList.grid(column=0, row=0)
 
 
-#---------------------------------------- Validation PAGE FRAME / CONTAINER ------------------------------------------------------------------------
-
 class Compare(View):
     def __init__(self, parent, container):
         super().__init__(self, container)
 
-        label = tk.Label(self, text="Validation Page", font=('Times', '20'))
-        label.pack(pady=0,padx=0)
-
+        label = tk.Label(self, text="Compare", font=('Times', '20'))
+        label.grid()
         ## ADD CODE HERE TO DESIGN THIS PAGE
+        self.lpreview = PreviewWindow(self, self)
+        self.rpreview = PreviewWindow(self, self)
+        self.lpreview.grid(column=0, row=0)
+        self.rpreview.grid(column=1, row=0)
+        self.photoRating = self.loadComparisons()
+        self.L = random.choice(list(self.photoRating.keys()))
+        self.R = random.choice(list(self.photoRating.keys()))
+        self.updatePhotos()
+        self.loadComparisons()
+
+    def loadComparisons(self):
+        try:
+            storedValues = json.load(open("compare.json", "r"))
+        except FileNotFoundError:
+            storedValues = {}
+        exifdb = api.DB()
+        tmp = {x['filename']: 1.0 for x in exifdb.getUniqueFiles()}
+        tmp.update(storedValues)
+        self.storeComparisons(tmp)
+        return tmp
+
+    def storeComparisons(self, results):
+        json.dump(results, open("compare.json", "w"))
+
+    def chooseLR(self, input):
+        if input == 0:
+            if self.photoRating[self.L] == self.photoRating[self.R]:
+                self.photoRating[self.L] += 0.1
+                self.photoRating[self.R] -= 0.1
+            else:
+                diff = abs(self.photoRating[self.L] - self.photoRating[self.R])
+                if self.photoRating[self.L] < self.photoRating[self.R]:
+                    self.photoRating[self.L] += diff/2 + 0.1
+                else:
+                    self.photoRating[self.L] += 0.1
+                
+        if input == 1:
+            if self.photoRating[self.L] == self.photoRating[self.R]:
+                self.photoRating[self.L] -= 0.1
+                self.photoRating[self.R] += 0.1
+            else:
+                diff = abs(self.photoRating[self.L] - self.photoRating[self.R])
+                if self.photoRating[self.R] < self.photoRating[self.L]:
+                    self.photoRating[self.R] += diff/2 + 0.1
+                else:
+                    self.photoRating[self.R] += 0.1
+        self.L = random.choice(list(self.photoRating.keys()))
+        self.R = random.choice(list(self.photoRating.keys()))
+        self.storeComparisons(self.photoRating)
+        self.updatePhotos()
+
+    def updatePhotos(self):
+        self.lpreview.setPreview(self.L)
+        self.rpreview.setPreview(self.R)
+
 
 
 if __name__ == "__main__":
