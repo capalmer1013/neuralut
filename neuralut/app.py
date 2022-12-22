@@ -62,9 +62,9 @@ class FileList(tk.Frame):
     def __init__(self, parent, container, preview):
         super().__init__(container)
         self.progressBar = Progressbar(self, orient=HORIZONTAL, length=100, mode="determinate", takefocus=True, maximum=100)
-        self.listbox = Listbox(self, width=50)
+        self.listbox = Listbox(self, width=50, height=40)
         self.progressBar.grid(row=0, sticky=N)
-        self.listbox.grid(row=1, sticky=N)
+        self.listbox.grid(row=1, sticky=N, rowspan=3)
         self.listbox.bind("<<ListboxSelect>>", self.listbox_callback)
         self.preview = preview
     
