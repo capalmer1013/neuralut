@@ -21,10 +21,7 @@ F_STOP = "f_number"
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-
-        ## Setting up Initial Things
-        self.title("Sample Tkinter Structuring")
-        # self.geometry("1800x900")
+        self.title("Neuralut")
         self.resizable(True, True)
         self.iconphoto(False, tk.PhotoImage(file='default.png'))
     
@@ -33,7 +30,6 @@ class App(tk.Tk):
         container.grid()
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
 
         ## Initialize Frames
         self.frames = {}
@@ -86,6 +82,7 @@ class FileList(tk.Frame):
             print(each)
             exifdb.addEntry(api.checkForExif(each), each)
             self.update()
+        self.progressBar['value'] = 0
 
     def doThatExifStuff(self, dirname):
         exifdb = api.DB()
