@@ -1,6 +1,11 @@
 import tkinter as tk
 from tkinter import *
+from tkinter.ttk import Progressbar
 from PIL import Image, ImageTk
+from tkinter import filedialog
+
+from fractions import Fraction
+import api
 import utils as U
 
 
@@ -16,7 +21,7 @@ class App(tk.Tk):
 
         ## Setting up Initial Things
         self.title("Sample Tkinter Structuring")
-        self.geometry("1200x1000")
+        self.geometry("1800x900")
         self.resizable(True, True)
         self.iconphoto(False, tk.PhotoImage(file='default.png'))
     
@@ -33,7 +38,7 @@ class App(tk.Tk):
         self.Validation = Validation
 
         ## Defining Frames and Packing it
-        for F in {HomePage}:
+        for F in {HomePage, }:
             frame = F(self, container)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")    
@@ -57,23 +62,18 @@ class HomePage(tk.Frame):
 
         label = tk.Label(self, text="Home Page", font=('Times', '20'))
         label.pack(pady=0,padx=0)
-
         ## ADD CODE HERE TO DESIGN THIS PAGE
-        self.init_preview()
 
-    def init_preview(self):
-        canvas = Canvas(self, width=IMG_SIZE[0], height=IMG_SIZE[1], bg="black")
+        self.canvas = Canvas(self, width=IMG_SIZE[0], height=IMG_SIZE[1], bg="#777777")
         image = Image.open('default.png')
-        # image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(image)
-        image_id = canvas.create_image(0, 0, anchor=NW, image=img)
-        canvas.create_oval(10, 10, 200, 150, fill='red', outline='blue')
-        canvas.pack(expand=True, fill=X)
-        # var = StringVar()
-        # exifLabel = Label(self, textvariable=var, relief=RAISED, font=("Arial", 25))
-        # var.set("test text")
-        # exifLabel.pack(side=LEFT)
-        # print("init preview complete")
+        image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
+        self.img = ImageTk.PhotoImage(image)  # img has to be stored otherwise loses references and deletes self
+        image_id = self.canvas.create_image(0, 0, anchor=NW, image=self.img)
+        self.canvas.pack(expand=True, fill=X)
+        var = StringVar()
+        exifLabel = Label(self, textvariable=var, relief=RAISED, font=("Arial", 25))
+        var.set("test text")
+        exifLabel.pack(side=LEFT)
 
     def create_menubar(self, parent):
         menubar = Menu(parent, bd=3, relief=RAISED, activebackground="#80B9DC")
@@ -81,16 +81,16 @@ class HomePage(tk.Frame):
         ## Filemenu
         filemenu = Menu(menubar, tearoff=0, relief=RAISED, activebackground="#026AA9")
         menubar.add_cascade(label="File", menu=filemenu)
-        filemenu.add_command(label="New Project", command=lambda: parent.show_frame(parent.Validation))
-        filemenu.add_command(label="Close", command=lambda: parent.show_frame(parent.HomePage))
+        # filemenu.add_command(label="New Project", command=lambda: parent.show_frame(parent.Validation))
+        # filemenu.add_command(label="Close", command=lambda: parent.show_frame(parent.HomePage))
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=parent.quit)  
 
         ## proccessing menu
         processing_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Validation", menu=processing_menu)
-        processing_menu.add_command(label="validate")
-        processing_menu.add_separator()
+        #menubar.add_cascade(label="Validation", menu=processing_menu)
+        # processing_menu.add_command(label="validate")
+        # processing_menu.add_separator()
 
         ## help menu
         help_menu = Menu(menubar, tearoff=0)
