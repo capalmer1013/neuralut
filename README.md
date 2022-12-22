@@ -13,10 +13,13 @@ dependencies:
 setup:
 - `pipenv install`
 	- if pipenv didn't detect pyenv and prompt to install the correct version of python, might need to run `pyenv install` first
-- `pipenv run python tkintertest.py`
+- ~~`pipenv run python tkintertest.py`~~ `pipenv run python app.py`
 	- might need to install system tkinter, readline, bz2, sqlite dev libraries (if python not compiled with them, if using pyenv this is usually because the appropriate libraries are not installed)
 
 notes:
+12/22/22
+- new app is in the neuralut directory
+- app runs with `pipenv run python app.py`
 2/18/2021
 - new build command is `pyinstaller neuralut.exe.spec`
 - tkintertest is getting the the point where it will need cleaned up. possibly after v 0.1.0
