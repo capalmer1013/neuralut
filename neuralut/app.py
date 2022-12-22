@@ -67,6 +67,9 @@ class FileList(tk.Frame):
         self.listbox.grid(row=1, sticky=N, rowspan=3)
         self.listbox.bind("<<ListboxSelect>>", self.listbox_callback)
         self.preview = preview
+        exifdb = api.DB()
+        exifdb.createExifTable()
+        self.populateFileListFromDB(exifdb)
     
     def browseFiles(self):
         dir = filedialog.askdirectory()
@@ -86,13 +89,16 @@ class FileList(tk.Frame):
 
     def doThatExifStuff(self, dirname):
         exifdb = api.DB()
-        exifdb.createExifTable()
         self.readFilesFromDir(dirname, exifdb)
-        for each in exifdb.getUniqueFiles():
-            self.listbox.insert(1, each['filename'])
+        self.populateFileListFromDB(exifdb)
+
         self.listbox.grid(row=1)
         self.update()
     
+    def populateFileListFromDB(self, exifdb):
+        for each in exifdb.getUniqueFiles():
+            self.listbox.insert(1, each['filename'])
+
     def listbox_callback(self, event):
         selection = event.widget.curselection()
         if selection:
