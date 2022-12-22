@@ -133,3 +133,5 @@ dmypy.json
 *.db
 
 .idea/
+neuralut/compare.json
+neuralut/monkeytype.sqlite3
