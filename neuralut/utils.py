@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 
 def about():
-    messagebox.showinfo('About', "This is a sample Application")
+    messagebox.showinfo('About', "todo: print version number here)
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
