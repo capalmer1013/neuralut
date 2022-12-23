@@ -12,6 +12,7 @@ import sys
 import os.path
 import random
 import json
+from threading import Thread
 
 
 IMG_SIZE = (800, 800)
@@ -147,7 +148,6 @@ class FileList(tk.Frame):
                 shutter_fraction = str(Fraction(exifData[SHUTTER_SPEED]).limit_denominator())
             except Exception as e:
                 print(e)
-                pass
             self.preview.exifText.set("iso: {}, shutter: {}, f-stop: {}".format(exifData[ISO], shutter_fraction, exifData[F_STOP]))
             self.preview.setPreview(data) # todo: rename to filename
 
@@ -161,18 +161,24 @@ class PreviewWindow(tk.Frame):
         exifLabel = Label(self, textvariable=self.exifText, relief=RAISED, font=("Arial", 25))
         self.exifText.set("test text")
         exifLabel.grid(row=1)
+        self.current_img_filename = None
     
     def setPreview(self, img_filename):
+        self.current_img_filename = img_filename
         image = Image.open(img_filename)
         image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
         self.img = ImageTk.PhotoImage(image)  # img has to be stored otherwise loses references and deletes self
         self.image_id = self.canvas.create_image(0, 0, anchor=NW, image=self.img)
-
+    
+    def openCubeGraph(self):
+        if self.current_img_filename:
+            t = Thread(target=lambda : api.displayCube(api.makeCube(self.current_img_filename)))
+            t.run()
+        
 
 class HomePage(View):
     def __init__(self, parent, container):
         super().__init__(self, container)
-
         label = tk.Label(self, text="Neuralut", font=('Times', '20'))
         label.grid()
         ## ADD CODE HERE TO DESIGN THIS PAGE
@@ -180,7 +186,8 @@ class HomePage(View):
         self.preview.grid(column=1, row=0)
         self.fileList = FileList(self, self, preview=self.preview)
         self.fileList.grid(column=0, row=0)
-
+        self.graph_button = Button(self, text="graph", command=self.preview.openCubeGraph)
+        self.graph_button.grid()
 
 class Compare(View):
     def __init__(self, parent, container):
@@ -243,8 +250,6 @@ class Compare(View):
     def updatePhotos(self):
         self.lpreview.setPreview(self.L)
         self.rpreview.setPreview(self.R)
-
-
 
 if __name__ == "__main__":
     app = App()

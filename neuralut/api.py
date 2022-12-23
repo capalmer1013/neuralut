@@ -24,12 +24,9 @@ def checkForExif(filename):
     try:
         with open(filename, 'rb') as image_file:
             my_image = Image(image_file)
-
         if not my_image.has_exif:
             return False
-
         return {x: my_image.get(x, None) for x in my_image.list_all()}
-
     except:
         return None
 
@@ -186,7 +183,8 @@ def mpl_3d_graph(x, y, z, c):
     ax.set_zlabel('b');
     ax.scatter3D(x, y, z, c=c, cmap="Greens")
     plt.savefig("3dblob.jpg")
-    return fig
+    plt.show()
+    # return fig
 
 
 def plotly_3d_graph(x, y, z, c):
