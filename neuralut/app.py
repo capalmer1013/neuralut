@@ -19,6 +19,8 @@ IMG_SIZE = (800, 800)
 ISO = "photographic_sensitivity"
 SHUTTER_SPEED = "exposure_time"
 F_STOP = "f_number"
+FOCAL_LENGTH = "focal_length"
+MODEL = "model"
 
 
 class App(tk.Tk):
@@ -148,7 +150,7 @@ class FileList(tk.Frame):
                 shutter_fraction = str(Fraction(exifData[SHUTTER_SPEED]).limit_denominator())
             except Exception as e:
                 print(e)
-            self.preview.exifText.set("iso: {}, shutter: {}, f-stop: {}".format(exifData[ISO], shutter_fraction, exifData[F_STOP]))
+            self.preview.exifText.set("iso: {}, shutter: {}, f-stop: {}, focal length: {}, model: {}".format(exifData[ISO], shutter_fraction, exifData[F_STOP], exifData[FOCAL_LENGTH], exifData[MODEL]))
             self.preview.setPreview(data) # todo: rename to filename
 
 class PreviewWindow(tk.Frame):
@@ -158,7 +160,7 @@ class PreviewWindow(tk.Frame):
         self.setPreview('default.png')
         self.canvas.grid(row=0)
         self.exifText = StringVar()
-        exifLabel = Label(self, textvariable=self.exifText, relief=RAISED, font=("Arial", 25))
+        exifLabel = Label(self, textvariable=self.exifText, relief=RAISED, font=("Arial", 18))
         self.exifText.set("test text")
         exifLabel.grid(row=1)
         self.current_img_filename = None
