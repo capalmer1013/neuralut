@@ -5,8 +5,8 @@ from PIL import Image, ImageTk
 from tkinter import filedialog
 
 from fractions import Fraction
-import api
-import utils as U
+from neuralut import api
+from neuralut import utils as U
 from sys import exit
 import sys
 import os.path
@@ -28,7 +28,7 @@ class App(tk.Tk):
         super().__init__()
         self.title("Neuralut")
         self.resizable(True, True)
-        self.iconphoto(False, tk.PhotoImage(file='default.png'))
+        self.iconphoto(False, tk.PhotoImage(file=U.resource_path('default.png')))
     
         ## Creating a container
         container = tk.Frame(self, bg="#8AA7A9")
@@ -157,7 +157,7 @@ class PreviewWindow(tk.Frame):
     def __init__(self, parent, container):
         super().__init__(container)
         self.canvas = Canvas(self, width=IMG_SIZE[0], height=IMG_SIZE[1], bg="#777777")
-        self.setPreview('default.png')
+        self.setPreview(U.resource_path('default.png'))
         self.canvas.grid(row=0)
         self.exifText = StringVar()
         exifLabel = Label(self, textvariable=self.exifText, relief=RAISED, font=("Arial", 18))
@@ -203,8 +203,12 @@ class Compare(View):
         self.lpreview.grid(column=0, row=0)
         self.rpreview.grid(column=1, row=0)
         self.photoRating = self.loadComparisons()
-        self.L = random.choice(list(self.photoRating.keys()))
-        self.R = random.choice(list(self.photoRating.keys()))
+        try:
+            self.L = random.choice(list(self.photoRating.keys()))
+            self.R = random.choice(list(self.photoRating.keys()))
+        except IndexError:
+            self.L = U.resource_path("default.png")
+            self.R = U.resource_path("default.png")
         self.updatePhotos()
         self.loadComparisons()
 

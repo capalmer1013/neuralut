@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['tkintertest.py'],
+a = Analysis(['app.py'],
              pathex=[],
              binaries=[],
              datas=[('.\\default.png', '.')],
