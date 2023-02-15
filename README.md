@@ -16,7 +16,11 @@ setup:
 - ~~`pipenv run python tkintertest.py`~~ `pipenv run python app.py`
 	- might need to install system tkinter, readline, bz2, sqlite dev libraries (if python not compiled with them, if using pyenv this is usually because the appropriate libraries are not installed)
 
-notes:
+# installing dependencies
+- use `python -m pipenv install <package name>`
+- this is unambiguous in which pipenv is being used
+
+# Notes:
 ## 12/22/22
 - new app is in the neuralut directory
 - app runs with `pipenv run python app.py`

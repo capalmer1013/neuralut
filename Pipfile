@@ -19,6 +19,7 @@ cython = "*"
 fastapi = {extras = ["all"], version = "*"}
 monkeytype = "*"
 rawpy = "*"
+imageio = "*"
 
 [dev-packages]
 
