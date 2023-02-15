@@ -18,6 +18,7 @@ kivy-examples = "*"
 cython = "*"
 fastapi = {extras = ["all"], version = "*"}
 monkeytype = "*"
+rawpy = "*"
 
 [dev-packages]
 
