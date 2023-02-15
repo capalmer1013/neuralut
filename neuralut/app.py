@@ -5,8 +5,8 @@ from PIL import Image, ImageTk
 from tkinter import filedialog
 
 from fractions import Fraction
-from neuralut import api
-from neuralut import utils as U
+import api
+import utils as U
 from sys import exit
 import sys
 import os.path
@@ -29,7 +29,7 @@ class App(tk.Tk):
         self.title("Neuralut")
         self.resizable(True, True)
         self.iconphoto(False, tk.PhotoImage(file=U.resource_path('default.png')))
-    
+
         ## Creating a container
         container = tk.Frame(self, bg="#8AA7A9")
         container.grid()
@@ -45,8 +45,8 @@ class App(tk.Tk):
         for F in {HomePage, Compare}:
             frame = F(self, container)
             self.frames[F] = frame
-            frame.grid(row=0, column=0, sticky="nsew")    
-           
+            frame.grid(row=0, column=0, sticky="nsew")
+
         self.show_frame(HomePage)
         self.bind("<Left>", lambda event: self.frames[Compare].chooseLR(0))
         self.bind("<Right>", lambda event: self.frames[Compare].chooseLR(1))
@@ -56,13 +56,13 @@ class App(tk.Tk):
         menubar = frame.create_menubar(self)
         self.configure(menu=menubar)
         frame.tkraise()                         ## This line will put the frame on front
- 
+
 
 
 class View(tk.Frame):
     def __init__(self, parent, container):
         super().__init__(container)
-    
+
     def create_menubar(self, parent):
         menubar = Menu(parent, bd=3, relief=RAISED, activebackground="#80B9DC")
 
@@ -72,7 +72,7 @@ class View(tk.Frame):
         filemenu.add_command(label="Import", command=lambda: self.fileList.browseFiles())
 
         filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=parent.quit)  
+        filemenu.add_command(label="Exit", command=parent.quit)
 
         ## View Menu
         viewmenu = Menu(menubar, tearoff=0, relief=RAISED, activebackground="#026AA9")
@@ -107,7 +107,7 @@ class FileList(tk.Frame):
         exifdb = api.DB()
         exifdb.createExifTable()
         self.populateFileListFromDB(exifdb)
-    
+
     def browseFiles(self):
         dir = filedialog.askdirectory()
         if dir:
@@ -132,7 +132,7 @@ class FileList(tk.Frame):
 
         self.listbox.grid(row=1)
         self.update()
-    
+
     def populateFileListFromDB(self, exifdb):
         for each in exifdb.getUniqueFiles():
             self.listbox.insert(1, each['filename'])
@@ -164,19 +164,19 @@ class PreviewWindow(tk.Frame):
         self.exifText.set("test text")
         exifLabel.grid(row=1)
         self.current_img_filename = None
-    
+
     def setPreview(self, img_filename):
         self.current_img_filename = img_filename
         image = Image.open(img_filename)
         image.thumbnail(IMG_SIZE, Image.ANTIALIAS)
         self.img = ImageTk.PhotoImage(image)  # img has to be stored otherwise loses references and deletes self
         self.image_id = self.canvas.create_image(0, 0, anchor=NW, image=self.img)
-    
+
     def openCubeGraph(self):
         if self.current_img_filename:
             t = Thread(target=lambda : api.displayCube(api.makeCube(self.current_img_filename)))
             t.run()
-        
+
 
 class HomePage(View):
     def __init__(self, parent, container):
@@ -237,7 +237,7 @@ class Compare(View):
                     self.photoRating[self.L] += diff/2 + 0.1
                 else:
                     self.photoRating[self.L] += 0.1
-                
+
         if input == 1:
             if self.photoRating[self.L] == self.photoRating[self.R]:
                 self.photoRating[self.L] -= 0.1
