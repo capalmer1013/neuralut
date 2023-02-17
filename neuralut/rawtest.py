@@ -1,7 +1,10 @@
 import rawpy
 import imageio
 
-path = 'tests/assets/600A9641.CR3'
+path = input("enter path to raw file: ")
+if not path:
+    path = 'tests/assets/600A9641.CR3'
+
 with rawpy.imread(path) as raw:
     params = rawpy.Params(
         use_camera_wb=True,
