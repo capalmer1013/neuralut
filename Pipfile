@@ -20,6 +20,7 @@ fastapi = {extras = ["all"], version = "*"}
 monkeytype = "*"
 rawpy = "*"
 imageio = "*"
+pytest = "*"
 
 [dev-packages]
 
